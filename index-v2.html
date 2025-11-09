@@ -432,17 +432,17 @@
                 <button class="reset-btn" onclick="confirmReset()">リセット（おうちの人用）</button>
             </div>
             <div id="allStampsCollected" class="congrats-banner hidden">
-                🎉 スタンプぜんぶあつまったよ！<br>おうちの人にごほうびをもらおう！🎁
+                🎉スタンプぜんぶあつまったよ！<br>おうちの人にごほうびをもらおう！🎁
             </div>
             <div class="level-select">
                 <button class="level-btn easy-btn" onclick="startGame('easy')">
-                    🌱 かんたん<br><small>(1〜5のだん)</small>
+                    🌱かんたん<br><small>(1〜5のだん)</small>
                 </button>
                 <button class="level-btn normal-btn" onclick="startGame('normal')">
-                    🌿 ふつう<br><small>(1〜9のだん)</small>
+                    🌿ふつう<br><small>(1〜9のだん)</small>
                 </button>
                 <button class="level-btn hard-btn" onclick="startGame('hard')">
-                    🌳 むずかしい<br><small>(10〜12のだん)</small>
+                    🌳むずかしい<br><small>(10〜12のだん)</small>
                 </button>
             </div>
         </div>
@@ -485,7 +485,7 @@
                 <div class="title">けっか</div>
             </div>
             <div id="newStampNotification" class="hidden new-stamp-notification">
-                <div style="font-size: 20px; font-weight: bold; color: #d63031;">🎊 やったね！🎊</div>
+                <div style="font-size: 20px; font-weight: bold; color: #d63031;">🎊やったね！🎊</div>
                 <div class="big-stamp">⭐</div>
                 <div style="font-size: 18px; font-weight: bold;">スタンプを1こゲット！</div>
             </div>
@@ -495,8 +495,8 @@
             </div>
             <div class="result-message" id="resultMessage">すごい！</div>
             <div class="result-buttons">
-                <button class="retry-btn" onclick="retryGame()">🔄 もう一度</button>
-                <button class="level-btn normal-btn" onclick="backToLevel()">📚 レベルせんたく</button>
+                <button class="retry-btn" onclick="retryGame()">🔄もう一度</button>
+                <button class="level-btn normal-btn" onclick="backToLevel()">📚レベルせんたく</button>
             </div>
         </div>
     </div>
@@ -510,9 +510,9 @@
         const STAMP_THRESHOLD = 100;
         const MAX_STAMPS = 5;
         const levelConfig = {
-            easy: { min: 1, max: 5, label: '🌱 かんたん', class: 'level-easy' },
-            normal: { min: 1, max: 9, label: '🌿 ふつう', class: 'level-normal' },
-            hard: { min: 10, max: 12, label: '🌳 むずかしい', class: 'level-hard' }
+            easy: { min: 1, max: 5, label: '🌱かんたん', class: 'level-easy' },
+            normal: { min: 1, max: 9, label: '🌿ふつう', class: 'level-normal' },
+            hard: { min: 10, max: 12, label: '🌳むずかしい', class: 'level-hard' }
         };
         function loadProgress() {
             const totalCorrect = parseInt(localStorage.getItem('totalCorrect') || '0');
