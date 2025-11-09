@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>かけ算れんしゅう</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .app-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .title::before,
+        .title::after {
+            content: '⚡';
+            margin: 0 8px;
+        }
+
+        .stamp-area {
+            background: linear-gradient(135deg, #FFF4D4, #FFE8A5);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stamp-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d63031;
+            margin-bottom: 10px;
+        }
+
+        .stamps {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .stamp {
+            font-size: 40px;
+            filter: grayscale(100%);
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .stamp.earned {
+            filter: grayscale(0%);
+            opacity: 1;
+            animation: stamp-pop 0.5s;
+        }
+
+        @keyframes stamp-pop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .total-correct {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .total-correct strong {
+            color: #d63031;
+            font-size: 16px;
+        }
+
+        .next-stamp {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .reset-btn {
+            background: #CFD8DC;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 12px;
+            color: #546e7a;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #B0BEC5;
+        }
+
+        .congrats-banner {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .level-easy { background: #B8E6D5; color: #2d6a5c; }
+        .level-normal { background: #CFD8DC; color: #546e7a; }
+        .level-hard { background: #B0C4DE; color: #4a5f7a; }
+
+        .stats {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .level-select {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .level-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .easy-btn {
+            background: linear-gradient(135deg, #B8E6D5, #A5DCC8);
+            color: #2d6a5c;
+        }
+
+        .normal-btn {
+            background: linear-gradient(135deg, #CFD8DC, #B0BEC5);
+            color: #546e7a;
+        }
+
+        .hard-btn {
+            background: linear-gradient(135deg, #B0C4DE, #9FB4D1);
+            color: #4a5f7a;
+        }
+
+        .question-area {
+            text-align: center;
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .answer-display {
+            font-size: 32px;
+            color: #667eea;
+            min-height: 40px;
+            font-weight: bold;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .number-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .number-btn:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .number-btn:active {
+            transform: translateY(0);
+        }
+
+        .zero-btn {
+            grid-column: 2;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .clear-btn {
+            background: #e0e0e0;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clear-btn:hover {
+            background: #d0d0d0;
+        }
+
+        .back-btn {
+            background: #9e9e9e;
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #757575;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.2;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            min-height: 30px;
+        }
+
+        .correct {
+            color: #667eea;
+        }
+
+        .incorrect {
+            color: #f44336;
+        }
+
+        .emoji {
+            font-size: 24px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result-screen {
+            text-align: center;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin: 20px 0;
+        }
+
+        .result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .result-buttons {
+            display: grid;
+            gap: 15px;
+        }
+
+        .retry-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #B8E6D5, #9FB4D1);
+            transition: width 0.3s;
+        }
+
+        .new-stamp-notification {
+            background: linear-gradient(135deg, #FFF4D4, #FFE8A5);
+            border: 3px solid #d63031;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .new-stamp-notification .big-stamp {
+            font-size: 60px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div id="levelScreen">
+            <div class="header">
+                <div class="title">かけ算れんしゅう</div>
+            </div>
+            <div class="stamp-area">
+                <div class="stamp-title">🎁 スタンプカード 🎁</div>
+                <div class="stamps" id="stampDisplay">
+                    <div class="stamp">⭐</div>
+                    <div class="stamp">⭐</div>
+                    <div class="stamp">⭐</div>
+                    <div class="stamp">⭐</div>
+                    <div class="stamp">⭐</div>
+                </div>
+                <div class="total-correct">
+                    ぜんぶで <strong id="totalCorrectDisplay">0</strong> もんせいかい！
+                </div>
+                <div class="next-stamp" id="nextStampText">
+                    あと100もんでスタンプ1こ！
+                </div>
+                <button class="reset-btn" onclick="confirmReset()">リセット（おうちの人用）</button>
+            </div>
+            <div id="allStampsCollected" class="congrats-banner hidden">
+                🎉 スタンプぜんぶあつまったよ！<br>おうちの人にごほうびをもらおう！🎁
+            </div>
+            <div class="level-select">
+                <button class="level-btn easy-btn" onclick="startGame('easy')">
+                    🌱 かんたん<br><small>(1〜5のだん)</small>
+                </button>
+                <button class="level-btn normal-btn" onclick="startGame('normal')">
+                    🌿 ふつう<br><small>(1〜9のだん)</small>
+                </button>
+                <button class="level-btn hard-btn" onclick="startGame('hard')">
+                    🌳 むずかしい<br><small>(10〜12のだん)</small>
+                </button>
+            </div>
+        </div>
+        <div id="gameScreen" class="hidden">
+            <div class="header">
+                <div class="title">かけ算れんしゅう</div>
+                <div id="levelBadge" class="level-badge"></div>
+                <div class="stats">
+                    <span id="current">1</span> / 10もん目　|　せいかい <span id="correct">0</span>もん
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 10%"></div>
+            </div>
+            <div class="question-area">
+                <div class="question" id="question">2 × 3 = ?</div>
+                <div class="answer-display" id="answer">?</div>
+            </div>
+            <div class="number-pad">
+                <button class="number-btn" onclick="addNumber(1)">1</button>
+                <button class="number-btn" onclick="addNumber(2)">2</button>
+                <button class="number-btn" onclick="addNumber(3)">3</button>
+                <button class="number-btn" onclick="addNumber(4)">4</button>
+                <button class="number-btn" onclick="addNumber(5)">5</button>
+                <button class="number-btn" onclick="addNumber(6)">6</button>
+                <button class="number-btn" onclick="addNumber(7)">7</button>
+                <button class="number-btn" onclick="addNumber(8)">8</button>
+                <button class="number-btn" onclick="addNumber(9)">9</button>
+                <button class="number-btn zero-btn" onclick="addNumber(0)">0</button>
+            </div>
+            <div class="action-buttons">
+                <button class="back-btn" onclick="backToLevel()">もどる</button>
+                <button class="clear-btn" onclick="clearAnswer()">クリア</button>
+                <button class="submit-btn" onclick="checkAnswer()">こたえ<br>あわせ</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+        <div id="resultScreen" class="hidden result-screen">
+            <div class="header">
+                <div class="title">けっか</div>
+            </div>
+            <div id="newStampNotification" class="hidden new-stamp-notification">
+                <div style="font-size: 20px; font-weight: bold; color: #d63031;">🎊 やったね！🎊</div>
+                <div class="big-stamp">⭐</div>
+                <div style="font-size: 18px; font-weight: bold;">スタンプを1こゲット！</div>
+            </div>
+            <div class="result-emoji" id="resultEmoji">🎉</div>
+            <div class="result-score">
+                10もん中<br><span id="finalScore">0</span>もんせいかい！
+            </div>
+            <div class="result-message" id="resultMessage">すごい！</div>
+            <div class="result-buttons">
+                <button class="retry-btn" onclick="retryGame()">🔄 もう一度</button>
+                <button class="level-btn normal-btn" onclick="backToLevel()">📚 レベルせんたく</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentAnswer = '';
+        let num1, num2, correctAnswer;
+        let totalQuestions = 0;
+        let correctAnswers = 0;
+        let currentLevel = 'normal';
+        const MAX_QUESTIONS = 10;
+        const STAMP_THRESHOLD = 100;
+        const MAX_STAMPS = 5;
+        const levelConfig = {
+            easy: { min: 1, max: 5, label: '🌱 かんたん', class: 'level-easy' },
+            normal: { min: 1, max: 9, label: '🌿 ふつう', class: 'level-normal' },
+            hard: { min: 10, max: 12, label: '🌳 むずかしい', class: 'level-hard' }
+        };
+        function loadProgress() {
+            const totalCorrect = parseInt(localStorage.getItem('totalCorrect') || '0');
+            const stamps = parseInt(localStorage.getItem('stamps') || '0');
+            return { totalCorrect, stamps };
+        }
+        function saveProgress(totalCorrect, stamps) {
+            localStorage.setItem('totalCorrect', totalCorrect.toString());
+            localStorage.setItem('stamps', stamps.toString());
+        }
+        function updateStampDisplay() {
+            const { totalCorrect, stamps } = loadProgress();
+            document.getElementById('totalCorrectDisplay').textContent = totalCorrect;
+            const stampElements = document.querySelectorAll('.stamp');
+            stampElements.forEach((stamp, index) => {
+                if (index < stamps) {
+                    stamp.classList.add('earned');
+                } else {
+                    stamp.classList.remove('earned');
+                }
+            });
+            const remaining = STAMP_THRESHOLD - (totalCorrect % STAMP_THRESHOLD);
+            if (stamps < MAX_STAMPS) {
+                document.getElementById('nextStampText').textContent = `あと${remaining}もんでスタンプ1こ！`;
+            } else {
+                document.getElementById('nextStampText').textContent = 'スタンプぜんぶあつまったよ！';
+            }
+            if (stamps >= MAX_STAMPS) {
+                document.getElementById('allStampsCollected').classList.remove('hidden');
+            } else {
+                document.getElementById('allStampsCollected').classList.add('hidden');
+            }
+        }
+        function confirmReset() {
+            if (confirm('スタンプとせいかい数をリセットしますか？\n（おうちの人がごほうびをあげたあとにおしてね）')) {
+                localStorage.setItem('totalCorrect', '0');
+                localStorage.setItem('stamps', '0');
+                updateStampDisplay();
+                alert('リセットしました！またがんばろう！🎉');
+            }
+        }
+        updateStampDisplay();
+        function startGame(level) {
+            currentLevel = level;
+            totalQuestions = 0;
+            correctAnswers = 0;
+            document.getElementById('levelScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            const badge = document.getElementById('levelBadge');
+            badge.textContent = levelConfig[level].label;
+            badge.className = 'level-badge ' + levelConfig[level].class;
+            updateProgress();
+            generateQuestion();
+        }
+        function retryGame() {
+            startGame(currentLevel);
+        }
+        function backToLevel() {
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('levelScreen').classList.remove('hidden');
+            updateStampDisplay();
+        }
+        function updateProgress() {
+            document.getElementById('current').textContent = totalQuestions + 1;
+            document.getElementById('correct').textContent = correctAnswers;
+            const progress = ((totalQuestions) / MAX_QUESTIONS) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+        function generateQuestion() {
+            const config = levelConfig[currentLevel];
+            num1 = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
+            num2 = Math.floor(Math.random() * (config.max - config.min + 1)) + config.min;
+            correctAnswer = num1 * num2;
+            document.getElementById('question').textContent = `${num1} × ${num2} = ?`;
+            document.getElementById('answer').textContent = '?';
+            document.getElementById('feedback').textContent = '';
+            currentAnswer = '';
+        }
+        function addNumber(num) {
+            if (currentAnswer.length < 4) {
+                currentAnswer += num;
+                document.getElementById('answer').textContent = currentAnswer;
+            }
+        }
+        function clearAnswer() {
+            currentAnswer = '';
+            document.getElementById('answer').textContent = '?';
+        }
+        function showResult() {
+            let { totalCorrect, stamps } = loadProgress();
+            const previousStamps = stamps;
+            totalCorrect += correctAnswers;
+            stamps = Math.min(Math.floor(totalCorrect / STAMP_THRESHOLD), MAX_STAMPS);
+            saveProgress(totalCorrect, stamps);
+            const gotNewStamp = stamps > previousStamps;
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = correctAnswers;
+            if (gotNewStamp) {
+                document.getElementById('newStampNotification').classList.remove('hidden');
+            } else {
+                document.getElementById('newStampNotification').classList.add('hidden');
+            }
+            let emoji, message;
+            if (correctAnswers === 10) {
+                emoji = '🏆';
+                message = 'パーフェクト！すごすぎる！';
+            } else if (correctAnswers >= 8) {
+                emoji = '🎉';
+                message = 'すばらしい！よくできたね！';
+            } else if (correctAnswers >= 6) {
+                emoji = '😊';
+                message = 'がんばったね！もう少し！';
+            } else {
+                emoji = '💪';
+                message = 'もう一回ちょうせんしてみよう！';
+            }
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultMessage').textContent = message;
+        }
+        function checkAnswer() {
+            if (currentAnswer === '') {
+                return;
+            }
+            totalQuestions++;
+            const userAnswer = parseInt(currentAnswer);
+            const feedbackEl = document.getElementById('feedback');
+            if (userAnswer === correctAnswer) {
+                correctAnswers++;
+                feedbackEl.innerHTML = '<span class="correct">せいかい！<span class="emoji">🎉</span></span>';
+            } else {
+                feedbackEl.innerHTML = `<span class="incorrect">ざんねん！こたえは ${correctAnswer} だよ<span class="emoji">💪</span></span>`;
+            }
+            updateProgress();
+            if (totalQuestions >= MAX_QUESTIONS) {
+                setTimeout(() => {
+                    showResult();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    generateQuestion();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
